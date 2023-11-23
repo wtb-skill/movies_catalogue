@@ -11,17 +11,27 @@
 
     <div class="row">
         <div class="col-md-8">
-            <img class="img-fluid" src="{{ tmdb_image_url(movie.backdrop_path, 'w780') }}" alt="">
+            {% if selected_backdrop.file_path %}
+                <img class="img-fluid" src="{{ tmdb_image_url(selected_backdrop.file_path, 'w780') }}" alt="">
+            {% else %}
+                <img src="https://dummyimage.com/780x450/000/fff.jpg?text={{ movie.title }}" class="img-fluid" alt="{{ movie.title }}">
+            {% endif %}
         </div>
 
         <div class="col-md-4">
-            <h3>{{ movie.tagline }}</h3>
-            <p>{{ movie.overview}}</p>
+            <h3 style="text-align: justify">{{ movie.tagline }}</h3>
+            <p style="text-align: justify">{{ movie.overview }}</p>
             <dl>
                 <dt>Budget</dt>
-                <dd>{{ movie.budget }}</dd>
+                <dd>
+                    ${{ '{:,.0f}'.format(movie.budget) }}
+                </dd>
                 <dt>Genre</dt>
-                <dd>{% for genre in movie.genres %}{{ genre.name }}, {% endfor %}</dd>
+                <dd>
+                    {% for genre in movie.genres %}
+                        {{ genre.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </dd>
             </dl>
         </div>
     </div>
@@ -38,7 +48,7 @@
                        {% else %}
                            <img src="https://dummyimage.com/185x278/000/fff.jpg?text={{ actor.name }}" class="figure-img img-fluid rounded" alt="{{ actor.name }}">
                        {% endif %}
-                       <figcaption class="figure-caption">{{ actor.name }} as {{ actor.character }}</figcaption>
+                       <figcaption class="figure-caption">{{ actor.name }} as <br><span class="font-italic">{{ actor.character }}</span></figcaption>
                    </figure>
                    </a>
            </div>
