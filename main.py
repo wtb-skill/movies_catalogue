@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, url_for
 from tmdb_client import get_poster_url, get_movies, get_single_movie, get_single_movie_cast, capitalize_all_words, \
     get_movie_images, search_movie, get_tv_series_aired_today, get_current_date
 from random import choice
@@ -18,13 +18,12 @@ def homepage():
     # Check if the selected_list is in the allowed_list, otherwise default to 'popular'
     if selected_list not in allowed_list:
         selected_list = 'popular'
-        incorrect_input = True
-    else:
-        incorrect_input = False
+        flash("You were redirected to the popular category because the input was incorrect.")
+        return redirect(url_for('homepage', list_type=selected_list))
 
     movies = get_movies(how_many=8, list_type=selected_list)
     return render_template("homepage.html", movies=movies, list=allowed_list, selected_list=selected_list,
-                           incorrect_input=incorrect_input, favorites_list=favorites.list)
+                           favorites_list=favorites.list)
 
 
 @app.context_processor
