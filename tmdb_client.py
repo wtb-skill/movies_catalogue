@@ -11,13 +11,7 @@ API_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNmYyMzIzZDAwNDQ1NGFjN2UzNTFkYmJkOT
 
 
 def get_poster_url(poster_api_path, size="w342"):
-    """
-    Tworzy działający adres do obrazka.
-
-    :param poster_api_path:
-    :param size:
-    :return:
-    """
+    """Tworzy działający adres do obrazka."""
     base_url = "https://image.tmdb.org/t/p/"
     return f"{base_url}{size}/{poster_api_path}"
 
@@ -28,35 +22,16 @@ def get_movies(how_many, list_type='popular'):
 
 
 def get_single_movie(movie_id):
-    endpoint = f"https://api.themoviedb.org/3/movie/{movie_id}"
-    headers = {
-        "Authorization": f"Bearer {API_TOKEN}"
-    }
-    response = requests.get(endpoint, headers=headers)
-    return response.json()
+    return call_tmdb_api(f"movie/{movie_id}")
 
 
 def get_single_movie_cast(movie_id):
-    endpoint = f"https://api.themoviedb.org/3/movie/{movie_id}/credits"
-    headers = {
-        "Authorization": f"Bearer {API_TOKEN}"
-    }
-    response = requests.get(endpoint, headers=headers)
-    return response.json()["cast"]
+    return call_tmdb_api(f"movie/{movie_id}/credits")["cast"]
 
 
 def get_movies_list(list_type):
-    """
-    Zwraca nam pełną listę filmów z wybranej kategorii.
-
-    :return:
-    """
-    endpoint = f"https://api.themoviedb.org/3/movie/{list_type}"
-    headers = {
-        "Authorization": f"Bearer {API_TOKEN}"
-    }
-    response = requests.get(endpoint, headers=headers)
-    return response.json()
+    """Zwraca nam pełną listę filmów z wybranej kategorii."""
+    return call_tmdb_api(f"movie/{list_type}")
 
 
 def capitalize_all_words(text):
@@ -64,32 +39,15 @@ def capitalize_all_words(text):
 
 
 def get_movie_images(movie_id):
-    endpoint = f"https://api.themoviedb.org/3/movie/{movie_id}/images"
-    headers = {
-        "Authorization": f"Bearer {API_TOKEN}"
-    }
-    response = requests.get(endpoint, headers=headers)
-    return response.json()
+    return call_tmdb_api(f"movie/{movie_id}/images")
 
 
 def search_movie(search_query):
-    endpoint = f"https://api.themoviedb.org/3/search/movie?query={search_query}"
-    headers = {
-        "Authorization": f"Bearer {API_TOKEN}"
-    }
-    response = requests.get(endpoint, headers=headers)
-    response = response.json()
-    return response['results']
+    return call_tmdb_api(f"search/movie?query={search_query}")['results']
 
 
 def get_tv_series_aired_today(how_many):
-    endpoint = "https://api.themoviedb.org/3/tv/airing_today"
-    headers = {
-        "Authorization": f"Bearer {API_TOKEN}"
-    }
-    response = requests.get(endpoint, headers=headers)
-    response = response.json()
-    return response['results'][:how_many]
+    return call_tmdb_api(f"tv/airing_today")['results'][:how_many]
 
 
 def get_current_date() -> str:
@@ -98,5 +56,11 @@ def get_current_date() -> str:
     return today
 
 
-if __name__ == "__main__":
-    print(get_current_date())
+def call_tmdb_api(endpoint):
+    full_url = f"https://api.themoviedb.org/3/{endpoint}"
+    headers = {
+        "Authorization": f"Bearer {API_TOKEN}"
+    }
+    response = requests.get(full_url, headers=headers)
+    response.raise_for_status()
+    return response.json()
