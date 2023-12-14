@@ -5,23 +5,17 @@ from datetime import datetime
 
 
 def test_get_poster_url_uses_default_size():
-    # Przygotowanie danych
     poster_api_path = "some-poster-path"
     expected_default_size = 'w342'
-    # Wywołanie kodu, który testujemy
     poster_url = tmdb_client.get_poster_url(poster_api_path=poster_api_path)
-    # Porównanie wyników
     assert expected_default_size in poster_url
 
 
 def test_get_movies_list(monkeypatch):
-    # Lista, którą będzie zwracać przysłonięte "zapytanie do API"
     mock_movies_list = ['Movie 1', 'Movie 2']
 
     requests_mock = Mock()
-    # Wynik wywołania zapytania do API
-    response = requests_mock.return_value  # podmieniamy na sztuczną wartość mock
-    # Przysłaniamy wynik wywołania metody .json()
+    response = requests_mock.return_value
     response.json.return_value = mock_movies_list
     monkeypatch.setattr("tmdb_client.requests.get", requests_mock)
 
@@ -38,27 +32,20 @@ def test_call_tmdb_api(monkeypatch):
 
 
 def test_get_current_date(monkeypatch):
-    # Define a mock date for testing purposes
-    mock_date = '2023-12-09'  # Set a specific date for testing
+    mock_date = '2023-12-09'
 
-    # Mock the datetime.today() method to return a fixed date
     class MockDateTime:
         @classmethod
         def today(cls):
             return datetime.strptime(mock_date, "%Y-%m-%d")
 
-    # Patching the datetime module's datetime class with the MockDateTime class
     monkeypatch.setattr('tmdb_client.datetime', MockDateTime)
 
-    # Call the function being tested
     result = tmdb_client.get_current_date()
-
-    # Assert the result matches the expected mock date
     assert result == mock_date
 
 
 def test_get_single_movie(monkeypatch):
-    # Define a mock response for call_tmdb_api specifically for get_single_movie test
     mock_movie_id = 123
     mock_response = {"id": mock_movie_id, "title": "Sample Movie", "rating": 8.5}
 
@@ -67,7 +54,6 @@ def test_get_single_movie(monkeypatch):
         # Simulate behavior of call_tmdb_api based on the endpoint
         if endpoint == f"movie/{mock_movie_id}":
             return mock_response
-        # If endpoint doesn't match, return None or raise an error based on your function's behavior
 
     # Patching the call_tmdb_api function with the mock specifically for this test
     monkeypatch.setattr("tmdb_client.call_tmdb_api", mock_call_tmdb_api)
@@ -75,12 +61,10 @@ def test_get_single_movie(monkeypatch):
     # Testing get_single_movie function with a specific movie_id
     movie_data = tmdb_client.get_single_movie(mock_movie_id)
 
-    # Asserting that the returned data matches the expected mock response
     assert movie_data == mock_response
 
 
 def test_get_movies(monkeypatch):
-    # Define a mock response for get_movies_list
     mock_list_type = 'popular'
     mock_movies_data = {
         "results": [
@@ -93,7 +77,6 @@ def test_get_movies(monkeypatch):
     def mock_get_movies_list(list_type):
         if list_type == mock_list_type:
             return mock_movies_data
-        # Handle other cases or raise an error if needed
 
     # Patching the get_movies_list function with the mock
     monkeypatch.setattr("tmdb_client.get_movies_list", mock_get_movies_list)
@@ -104,7 +87,6 @@ def test_get_movies(monkeypatch):
 
     # Asserting the length of the returned movies matches the expected number_of_movies
     assert len(movies) == number_of_movies
-    # You can add more assertions to validate the structure/content of the returned movies list
 
 
 def test_get_single_movie_cast(monkeypatch):
@@ -120,7 +102,6 @@ def test_get_single_movie_cast(monkeypatch):
     def mock_call_tmdb_api(endpoint):
         if endpoint == f"movie/{mock_movie_id}/credits":
             return {"cast": mock_cast_data}
-        # Handle other cases or raise an error if needed
 
     # Patching the call_tmdb_api function with the mock
     monkeypatch.setattr("tmdb_client.call_tmdb_api", mock_call_tmdb_api)
@@ -130,7 +111,6 @@ def test_get_single_movie_cast(monkeypatch):
 
     # Asserting the length of the returned cast matches the length of the mock_cast_data
     assert len(cast) == len(mock_cast_data)
-    # You can add more assertions to validate the structure/content of the returned cast list
 
 
 # List of test cases for capitalize_all_words function
@@ -144,7 +124,6 @@ test_cases = [
 ]
 
 
-# Parametrized pytest using test cases
 @pytest.mark.parametrize("input_text, expected_output", test_cases)
 def test_capitalize_all_words(input_text, expected_output):
     result = tmdb_client.capitalize_all_words(input_text)
