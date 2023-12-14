@@ -7,9 +7,6 @@ API_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNmYyMzIzZDAwNDQ1NGFjN2UzNTFkYmJkOT
             'joxfQ.26vl6tYyTUBM4uBMflWTII6SguHeJou487xGT0Hf7Bc'
 
 
-# src="https://dummyimage.com/300x500/000/fff.jpg"  # blank picture
-
-
 def get_poster_url(poster_api_path, size="w342"):
     """Tworzy działający adres do obrazka."""
     base_url = "https://image.tmdb.org/t/p/"
